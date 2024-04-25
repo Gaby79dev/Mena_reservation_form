@@ -3,4 +3,4 @@
 .web
 __pycache__/
 .env
-echo ".env" >> .gitignore
+
