@@ -73,11 +73,12 @@ def kill(proc_pid: int):
 # run_process_and_launch_url is assumed to be used
 # only to launch the frontend
 # If this is not the case, might have to change the logic
-def run_process_and_launch_url(run_command: list[str]):
+def run_process_and_launch_url(run_command: list[str], backend_present=True):
     """Run the process and launch the URL.
 
     Args:
         run_command: The command to run.
+        backend_present: Whether the backend is present.
     """
     from reflex.utils import processes
 
@@ -89,7 +90,7 @@ def run_process_and_launch_url(run_command: list[str]):
     while True:
         if process is None:
             kwargs = {}
-            if constants.IS_WINDOWS:
+            if constants.IS_WINDOWS and backend_present:
                 kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP  # type: ignore
             process = processes.new_process(
                 run_command,
@@ -112,6 +113,14 @@ def run_process_and_launch_url(run_command: list[str]):
                     else:
                         console.print("New packages detected: Updating app...")
                 else:
+                    if any(
+                        [x in line for x in ("bin executable does not exist on disk",)]
+                    ):
+                        console.error(
+                            "Try setting `REFLEX_USE_NPM=1` and re-running `reflex init` and `reflex run` to use npm instead of bun:\n"
+                            "`REFLEX_USE_NPM=1 reflex init`\n"
+                            "`REFLEX_USE_NPM=1 reflex run`"
+                        )
                     new_hash = detect_package_change(json_file_path)
                     if new_hash != last_hash:
                         last_hash = new_hash
@@ -122,12 +131,13 @@ def run_process_and_launch_url(run_command: list[str]):
             break  # while True
 
 
-def run_frontend(root: Path, port: str):
+def run_frontend(root: Path, port: str, backend_present=True):
     """Run the frontend.
 
     Args:
         root: The root path of the project.
         port: The port to run the frontend on.
+        backend_present: Whether the backend is present.
     """
     from reflex.utils import prerequisites
 
@@ -139,15 +149,19 @@ def run_frontend(root: Path, port: str):
     # Run the frontend in development mode.
     console.rule("[bold green]App Running")
     os.environ["PORT"] = str(get_config().frontend_port if port is None else port)
-    run_process_and_launch_url([prerequisites.get_package_manager(), "run", "dev"])  # type: ignore
+    run_process_and_launch_url(
+        [prerequisites.get_package_manager(), "run", "dev"],  # type: ignore
+        backend_present,
+    )
 
 
-def run_frontend_prod(root: Path, port: str):
+def run_frontend_prod(root: Path, port: str, backend_present=True):
     """Run the frontend.
 
     Args:
         root: The root path of the project (to keep same API as run_frontend).
         port: The port to run the frontend on.
+        backend_present: Whether the backend is present.
     """
     from reflex.utils import prerequisites
 
@@ -157,7 +171,10 @@ def run_frontend_prod(root: Path, port: str):
     prerequisites.validate_frontend_dependencies(init=False)
     # Run the frontend in production mode.
     console.rule("[bold green]App Running")
-    run_process_and_launch_url([prerequisites.get_package_manager(), "run", "prod"])  # type: ignore
+    run_process_and_launch_url(
+        [prerequisites.get_package_manager(), "run", "prod"],  # type: ignore
+        backend_present,
+    )
 
 
 def run_backend(
@@ -208,8 +225,12 @@ def run_backend_prod(
     """
     from reflex.utils import processes
 
-    num_workers = processes.get_num_workers()
     config = get_config()
+    num_workers = (
+        processes.get_num_workers()
+        if not config.gunicorn_workers
+        else config.gunicorn_workers
+    )
     RUN_BACKEND_PROD = f"gunicorn --worker-class {config.gunicorn_worker_class} --preload --timeout {config.timeout} --log-level critical".split()
     RUN_BACKEND_PROD_WINDOWS = f"uvicorn --timeout-keep-alive {config.timeout}".split()
     app_module = f"reflex.app_module_for_backend:{constants.CompileVars.APP}"
@@ -271,7 +292,11 @@ def output_system_info():
 
     system = platform.system()
 
-    if system != "Windows":
+    if (
+        system != "Windows"
+        or system == "Windows"
+        and prerequisites.is_windows_bun_supported()
+    ):
         dependencies.extend(
             [
                 f"[FNM {prerequisites.get_fnm_version()} (Expected: {constants.Fnm.VERSION}) (PATH: {constants.Fnm.EXE})]",

@@ -17,7 +17,7 @@ from reflex.components.component import (
 )
 from reflex.config import get_config
 from reflex.state import BaseState
-from reflex.style import LIGHT_COLOR_MODE
+from reflex.style import SYSTEM_COLOR_MODE
 from reflex.utils.exec import is_prod_mode
 from reflex.utils.imports import ImportVar
 from reflex.vars import Var
@@ -79,7 +79,7 @@ def _compile_contexts(state: Optional[Type[BaseState]], theme: Component | None)
     """
     appearance = getattr(theme, "appearance", None)
     if appearance is None:
-        appearance = LIGHT_COLOR_MODE
+        appearance = SYSTEM_COLOR_MODE
     return (
         templates.CONTEXT.render(
             initial_state=utils.compile_state(state),
@@ -169,12 +169,12 @@ def _compile_root_stylesheet(stylesheets: list[str]) -> str:
                 raise FileNotFoundError(
                     f"The stylesheet file {stylesheet_full_path} does not exist."
                 )
-            stylesheet = f"@/{stylesheet.strip('/')}"
+            stylesheet = f"../{constants.Dirs.PUBLIC}/{stylesheet.strip('/')}"
         sheets.append(stylesheet) if stylesheet not in sheets else None
     return templates.STYLE.render(stylesheets=sheets)
 
 
-def _compile_component(component: Component) -> str:
+def _compile_component(component: Component | StatefulComponent) -> str:
     """Compile a single component.
 
     Args:
@@ -263,9 +263,18 @@ def _compile_stateful_components(
             # Reset this flag to render the actual component.
             component.rendered_as_shared = False
 
+            # Include dynamic imports in the shared component.
+            if dynamic_imports := component._get_all_dynamic_imports():
+                rendered_components.update(
+                    {dynamic_import: None for dynamic_import in dynamic_imports}
+                )
+
+            # Include custom code in the shared component.
             rendered_components.update(
                 {code: None for code in component._get_all_custom_code()},
             )
+
+            # Include all imports in the shared component.
             all_import_dicts.append(component._get_all_imports())
 
             # Indicate that this component now imports from the shared file.
