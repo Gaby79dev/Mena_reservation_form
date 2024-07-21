@@ -20,9 +20,9 @@ class ReservationFormState(rx.State):
     check_in: str = ""
     check_out: str = ""
     phone_number: str = ""
-    email_adress: str = ""
+    email_address: str = ""
     accommodation_type: str = ""
-    rooms_to_reserve:str = ""
+    rooms_to_reserve: str = ""
     superior_type: str = ""
     credit_card_number: str = ""
     expiration_date: str = ""
@@ -72,8 +72,8 @@ class ReservationFormState(rx.State):
         self.phone_number = new_phone_number
         self.update_submit_enabled()
 
-    def set_email_adress(self, new_email_adress):
-        self.email_adress = new_email_adress
+    def set_email_address(self, new_email_address):
+        self.email_address = new_email_address
 
     def set_credit_card_number(self, new_credit_card_number):
         # Eliminar cualquier carácter no numérico y asegurarse de que solo queden 16 dígitos
@@ -85,7 +85,7 @@ class ReservationFormState(rx.State):
 
     def format_credit_card_number(self, credit_card_number):
         # Utiliza una expresión regular para formatear el número de tarjeta de crédito
-        return ' '.join(re.findall('.{4}', credit_card_number))
+        return ' '.join(re.findall('.{1,4}', credit_card_number))
     
     def set_expiration_date(self, new_expiration_date):
         self.expiration_date = new_expiration_date
@@ -189,25 +189,25 @@ class ReservationFormState(rx.State):
         email_body_encoded_apartment_es = quote(email_body_apartment_es)
 
         # Datos para el mailto link
-        mailto_link_double_en = f'mailto:{self.email_adress}?subject=Mena Plaza Confirmation%20{check_in_date}%20To%20{check_out_date}&body={email_body_encoded_double_en}'
-        mailto_link_double_es = f'mailto:{self.email_adress}?subject=Confirmación Mena Plaza%20{check_in_date}%20a%20{check_out_date}&body={email_body_encoded_double_es}'
-        mailto_link_family_en = f'mailto:{self.email_adress}?subject=Mena Plaza Confirmation%20{check_in_date}%20To%20{check_out_date}&body={email_body_encoded_family_en}'
-        mailto_link_family_es = f'mailto:{self.email_adress}?subject=Confirmación Mena Plaza%20{check_in_date}%20a%20{check_out_date}&body={email_body_encoded_family_es}'
-        mailto_link_apartment_en = f'mailto:{self.email_adress}?subject=Mena Plaza Confirmation%20{check_in_date}%20To%20{check_out_date}&body={email_body_encoded_apartment_en}'
-        mailto_link_apartment_es = f'mailto:{self.email_adress}?subject=Confirmación Mena Plaza%20{check_in_date}%20a%20{check_out_date}&body={email_body_encoded_apartment_es}'
+        mailto_link_double_en = f'mailto:{self.email_address}?subject=Mena Plaza Confirmation%20{check_in_date}%20To%20{check_out_date}&body={email_body_encoded_double_en}'
+        mailto_link_double_es = f'mailto:{self.email_address}?subject=Confirmación Mena Plaza%20{check_in_date}%20a%20{check_out_date}&body={email_body_encoded_double_es}'
+        mailto_link_family_en = f'mailto:{self.email_address}?subject=Mena Plaza Confirmation%20{check_in_date}%20To%20{check_out_date}&body={email_body_encoded_family_en}'
+        mailto_link_family_es = f'mailto:{self.email_address}?subject=Confirmación Mena Plaza%20{check_in_date}%20a%20{check_out_date}&body={email_body_encoded_family_es}'
+        mailto_link_apartment_en = f'mailto:{self.email_address}?subject=Mena Plaza Confirmation%20{check_in_date}%20To%20{check_out_date}&body={email_body_encoded_apartment_en}'
+        mailto_link_apartment_es = f'mailto:{self.email_address}?subject=Confirmación Mena Plaza%20{check_in_date}%20a%20{check_out_date}&body={email_body_encoded_apartment_es}'
 
         # llamada a la función de EmailTemplates para generar el html de confirmación de la reserva
         content = EmailTemplates.get_email_confirmation_reservation_template(
                 image_url, 
-                reservation_name =self.reservation_name,
+                reservation_name = self.reservation_name,
                 check_in_date = self.check_in,
                 check_out_date = self.check_out,
-                phone_number = self.email_adress,
-                email_adress = self.email_adress,
+                phone_number = self.phone_number,
+                email_address = self.email_address,
                 rooms_to_reserve = self.rooms_to_reserve,
                 accommodation_type = self.accommodation_type,
                 superior_type = self.superior_type,
-                formatted_credit_card_number = formatted_credit_card_number ,
+                formatted_credit_card_number = formatted_credit_card_number,
                 expiration_date = self.expiration_date,
                 observation = self.observation,
                 mailto_link_double_en = mailto_link_double_en,
@@ -239,6 +239,8 @@ class ReservationFormState(rx.State):
     def success_message(self):
         return rx.cond(
             self.email_sent_successfully,
+            "Email sent successfully!",
+            "Failed to send email."
         )
     
     def handle_send_email_and_message(self, FORM_DATA):
@@ -247,9 +249,9 @@ class ReservationFormState(rx.State):
         self.set_check_in(FORM_DATA.get('check_in', self.check_in))
         self.set_check_out(FORM_DATA.get('check_out', self.check_out))
         self.set_phone_number(FORM_DATA.get('phone_number', self.phone_number))
-        self.set_email_adress(FORM_DATA.get('email_adress', self.email_adress))
+        self.set_email_address(FORM_DATA.get('email_address', self.email_address))
         self.set_accommodation_type(FORM_DATA.get('accommodation_type', self.accommodation_type))
-        self.set_rooms_to_reserve(FORM_DATA.get('rooms_to_reserve',self.rooms_to_reserve))
+        self.set_rooms_to_reserve(FORM_DATA.get('rooms_to_reserve', self.rooms_to_reserve))
         self.set_superior_type(FORM_DATA.get('superior_type', self.superior_type))
         self.set_credit_card_number(FORM_DATA.get('credit_card_number', self.credit_card_number))
         self.set_expiration_date(FORM_DATA.get('expiration_date', self.expiration_date))
@@ -265,7 +267,7 @@ class ReservationFormState(rx.State):
             self.check_in = ""
             self.check_out = ""
             self.phone_number = ""
-            self.email_adress = ""
+            self.email_address = ""
             self.rooms_to_reserve = ""
             self.accommodation_type = ""
             self.superior_type = ""

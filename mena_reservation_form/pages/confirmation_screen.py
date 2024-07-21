@@ -15,7 +15,7 @@ def confirmation_screen():
     card_content = rx.vstack(
         rx.hstack( 
             rx.image(
-                src="/favicon.ico",
+                src="https://firebasestorage.googleapis.com/v0/b/mena-garden-87c52.appspot.com/o/logo_y_letras_negro.png?alt=media&token=448f6e5c-9c59-403d-9bb9-150936177425",
                 style={"margin_bottom": "20px"},
                 width="100px",
                 height="auto",   

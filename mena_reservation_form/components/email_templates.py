@@ -9,7 +9,7 @@ class EmailTemplates:
                 check_in_date,
                 check_out_date,
                 phone_number,
-                email_adress,
+                email_address,
                 rooms_to_reserve,
                 accommodation_type,
                 superior_type,
@@ -128,7 +128,7 @@ class EmailTemplates:
                                         </tr>
                                         <tr>
                                         <td><strong>Email:</strong></td>
-                                        <td>{email_adress}</td>
+                                        <td>{email_address}</td>
                                         </tr>
                                         <tr>
                                         <td><strong>Nº de rooms:</strong></td>
@@ -191,7 +191,7 @@ class EmailTemplates:
                 reservation_name,
                 reservation_date_formatted,
                 phone_number,
-                email_adress,
+                email_address,
                 passenger_number,
                 flight_number,
                 time_arrival,
@@ -301,7 +301,7 @@ class EmailTemplates:
                                 </tr>
                                 <tr>
                                 <td><strong>Email:</strong></td>
-                                <td>{email_adress}</td>
+                                <td>{email_address}</td>
                                 </tr>
                                 <tr>
                                 <td><strong>Número de pasajeros:</strong></td>
@@ -536,16 +536,98 @@ class EmailTemplates:
         """
 
         @staticmethod
-        def get_taxi_confirmation_es(reservation_date,time_arrival,reservation_name,price):
-                return f"""Estimado/a {reservation_name},
+        def get_generate_print_template(
+                reservation_name,
+                image_url, 
+                check_in_date,
+                check_out_date,
+                phone_number,
+                email_address,
+                rooms_to_reserve,
+                accommodation_type,
+                superior_type,
+                formatted_credit_card_number,
+                expiration_date,
+                observation,
+        ):
+                return f"""
+                <html>
+                <head>
+                <style>
+                        body {{
+                        font-family: Arial, sans-serif;
+                        margin: 20px;
+                        background-color: white;
+                        color: black;
+                        }}
+                        .header {{
+                        text-align: left;
+                        margin-bottom: 20px;
+                        }}
+                        .header img {{
+                        width: 250px; /* Ajusta el tamaño aquí */
+                        height: auto;
+                        display: inline-block; /* Cambiado de block a inline-block */
+                        vertical-align: top; /* Alinea la imagen con el texto superior */
+                        }}
+                        .header h1 {{
+                        margin: 10px 0 0 0;
+                        display: inline-block; /* Hace que el título esté en línea con la imagen */
+                        vertical-align: top; /* Alinea el texto con la parte superior de la imagen */
+                        }}
+                        .section {{
+                        margin-top: 20px;
+                        }}
+                        .section h2 {{
+                        margin-top: 0;
+                        color: #4B5052;
+                        background-color: #CBD3D8;
+                        padding: 10px;
+                        }}
+                        .section p {{
+                        margin: 10px 0;
+                        }}
+                        .footer {{
+                        text-align: center;
+                        font-size: 12px;
+                        color: #777;
+                        margin-top: 20px;
+                        }}
+                        .price-input {{
+                        width: 100%;
+                        padding: 10px;
+                        margin-top: 10px;
+                        border: 1px solid #ccc;
+                        border-radius: 5px;
+                        box-sizing: border-box;
+                        }}
+                </style>
+                </head>
+                <body>
+                <div class="header">
+                        <img src="{image_url}" alt="Logo" />
+                        <h1>Reserva: {reservation_name}</h1>
+                </div>
 
-        Gracias por proporcionar la información.
+                <div class="section">
+                        <h2>Detalles de la Reserva</h2>
+                        <p><strong>Fecha de entrada:</strong> {check_in_date}</p>
+                        <p><strong>Fecha de salida:</strong> {check_out_date}</p>
+                        <p><strong>Nº Teléfono:</strong> {phone_number}</p>
+                        <p><strong>Email:</strong> {email_address}</p>
+                        <p><strong>Nº de habitaciones:</strong> {rooms_to_reserve}</p>
+                        <p><strong>Tipo de Alojamiento:</strong> {accommodation_type}</p>
+                        <p><strong>En régimen de:</strong> {superior_type}</p>
+                        <p><strong>Número de tarjeta de crédito:</strong> {formatted_credit_card_number}</p>
+                        <p><strong>Fecha de expiración:</strong> {expiration_date}</p>
+                        <p><strong>Observaciones:</strong> {observation}</p>
+                        <p><strong>Precio:</strong> <input type="text" class="price-input" placeholder="" /></p>
+                </div>
 
-        Me gustaría confirmar su reserva de taxi para el día {reservation_date} a las {time_arrival}.
-        Un taxista lo estará esperando en las llegadas del aeropuerto, sosteniendo un cartel con su nombre.
-        La tarifa del viaje es de {price}€ y se puede pagar directamente al conductor, ya sea en efectivo o con tarjeta.
-
-        Saludos cordiales,
-
-        Departamento de Reservas
-        """
+                <div class="footer">
+                        <p>RESERVA DE FORMULARIO WEB</p>
+                        <p>&copy; 2024 Angesgar SL Todos los derechos reservados.</p>
+                </div>
+                </body>
+                </html>
+                """
