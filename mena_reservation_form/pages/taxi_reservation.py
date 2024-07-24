@@ -93,8 +93,8 @@ def taxiReservation() -> rx.Component:
                             rx.spacer(width="1em"),
                             rx.input(
                                 type="email",
-                                value=State.email_adress,
-                                on_change=State.set_email_adress,
+                                value=State.email_address,
+                                on_change=State.set_email_address,
                                 required=True,
                                 align="left",
                                 width="50%"
