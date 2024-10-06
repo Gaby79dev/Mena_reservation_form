@@ -1,9 +1,13 @@
 import reflex as rx
 from mena_reservation_form.state.form_state import ReservationFormState as State
 from mena_reservation_form.state.translation_state import Translation_state
+from mena_reservation_form.components.navbar import navbar
+from mena_reservation_form.components.footer import footer
 
+rx.page(title="Hotel Reservation Form", route="/hotel_reservation", image="/favicon.ico")
 def reservationForm() -> rx.Component:
     return rx.vstack(
+        navbar(),
         rx.card(
             rx.heading(
                 Translation_state.reservation_form_translation, 
@@ -205,29 +209,36 @@ def reservationForm() -> rx.Component:
                         name="show_credit_card_numbers",
                         width="100%",
                     ),
-                    rx.form.field(                      
-                        rx.hstack(
-                            rx.text(
-                                f"* {Translation_state.reservation_form_translation_card_number}",
-                                weight="bold",
-                                width="50%"
-                            ),
-                            rx.spacer(width="1em"),
-                            rx.input(
-                                value=State.credit_card_number,
-                                on_change=State.set_credit_card_number,
-                                required=True,
-                                align="left",
-                                width="50%",
-                                max_length=16,
-                                type= rx.cond(
-                                    State.show_credit_card_numbers,
-                                    "text",
-                                    "password"
+                    rx.form.field(
+                            rx.vstack(
+                                rx.hstack(
+                                    rx.text(
+                                        f"* {Translation_state.reservation_form_translation_card_number}",
+                                        weight="bold",
+                                        width="50%"
+                                    ),
+                                    rx.spacer(width="1em"),
+                                    rx.input(
+                                        value=State.credit_card_number,
+                                        on_change=State.set_credit_card_number,
+                                        required=True,
+                                        align="left",
+                                        width="50%",
+                                        max_length=16,
+                                        type=rx.cond(
+                                            State.show_credit_card_numbers,
+                                            "text",
+                                            "password"
+                                        ),
+                                    ),
+                                    align="center",
+                                    width="100%"
                                 ),
-                            ),   
-                            align="center"                             
-                        ),
+                                rx.cond(
+                                    State.inline_error != "",
+                                    rx.text(State.inline_error, color="red"),
+                                ),
+                            ),
                         name="card_number",
                         width="100%"
                     ),
@@ -290,6 +301,21 @@ def reservationForm() -> rx.Component:
                 reset_on_submit=True,
             ),
         ),
-        margin_top="50px",
+        rx.alert_dialog.root(
+            rx.alert_dialog.content(
+                rx.alert_dialog.title("Error de validación"),
+                rx.alert_dialog.description(State.credit_card_error),
+                rx.flex(
+                    rx.alert_dialog.action(
+                        rx.button("Cerrar"),
+                        on_click=State.close_error_dialog,
+                    ),
+                    spacing="3",
+                ),
+            ),
+            open=State.show_error_dialog,
+        ),
+        footer(),
         align="center",
+        bg="#E7EEF7"
     )

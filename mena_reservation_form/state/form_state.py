@@ -9,6 +9,7 @@ from urllib.parse import quote
 from mena_reservation_form.components.email_templates import EmailTemplates
 from babel.dates import format_date, Locale
 import re
+from creditcard import CreditCard
 
 
 class ReservationFormState(rx.State):
@@ -27,6 +28,9 @@ class ReservationFormState(rx.State):
     credit_card_number: str = ""
     expiration_date: str = ""
     observation: str = ""
+    credit_card_error: str = ""
+    show_error_dialog: bool = False
+    inline_error: str = ""
 
     def update_submit_enabled(self):
         # Actualiza el estado del botón de envío basado en campos requeridos
@@ -75,13 +79,38 @@ class ReservationFormState(rx.State):
     def set_email_address(self, new_email_address):
         self.email_address = new_email_address
 
-    def set_credit_card_number(self, new_credit_card_number):
-        # Eliminar cualquier carácter no numérico y asegurarse de que solo queden 16 dígitos
-        cleaned_number = ''.join(filter(str.isdigit, new_credit_card_number))
-        if len(cleaned_number) > 16:
-            cleaned_number = cleaned_number[:16]
-        self.credit_card_number = cleaned_number
-        self.update_submit_enabled()
+    def set_credit_card_number(self, new_credit_card_number: str):
+            cleaned_number = ''.join(filter(str.isdigit, new_credit_card_number))
+            
+            if not cleaned_number:
+                self.credit_card_error = "El número de tarjeta de crédito no puede estar vacío."
+                self.show_error_dialog = True
+                self.inline_error = ""
+            elif len(cleaned_number) != 16:
+                self.inline_error = "16 dígitos/digits."
+                self.credit_card_error = ""
+                self.show_error_dialog = False
+            else:
+                try:
+                    card = CreditCard(cleaned_number)
+                    if card.is_valid:
+                        self.credit_card_number = cleaned_number
+                        self.credit_card_error = ""
+                        self.show_error_dialog = False
+                        self.inline_error = ""
+                    else:
+                        self.credit_card_error = "Número de tarjeta de crédito inválido / Wrong number. Por favor, ingresa un número válido."
+                        self.show_error_dialog = True
+                        self.inline_error = ""
+                except ValueError as e:
+                    self.credit_card_error = f"Error al validar la tarjeta de crédito: {str(e)}"
+                    self.show_error_dialog = True
+                    self.inline_error = ""
+            
+            self.update_submit_enabled()
+
+    def close_error_dialog(self):
+        self.show_error_dialog = False
 
     def format_credit_card_number(self, credit_card_number):
         # Utiliza una expresión regular para formatear el número de tarjeta de crédito
@@ -127,7 +156,6 @@ class ReservationFormState(rx.State):
         month_es = month_names['es']
             
         email_body_double_en = EmailTemplates.get_email_template_double_en(
-            self.reservation_name,
             check_in_date,
             check_out_date,
             self.accommodation_type,
@@ -137,7 +165,6 @@ class ReservationFormState(rx.State):
         )
         
         email_body_double_es = EmailTemplates.get_email_template_double_es(
-            self.reservation_name,
             check_in_date,
             check_out_date,
             self.accommodation_type,
@@ -147,7 +174,6 @@ class ReservationFormState(rx.State):
         )
 
         email_body_family_en = EmailTemplates.get_email_template_family_en(
-            self.reservation_name,
             check_in_date,
             check_out_date,
             self.accommodation_type,
@@ -156,7 +182,6 @@ class ReservationFormState(rx.State):
         )
 
         email_body_family_es = EmailTemplates.get_email_template_family_es(
-            self.reservation_name,
             check_in_date,
             check_out_date,
             self.accommodation_type,
@@ -165,7 +190,6 @@ class ReservationFormState(rx.State):
         )
 
         email_body_apartment_en = EmailTemplates.get_email_template_apartment_en(
-            self.reservation_name,
             check_in_date,
             check_out_date,
             self.accommodation_type,
@@ -173,12 +197,11 @@ class ReservationFormState(rx.State):
         )
 
         email_body_apartment_es = EmailTemplates.get_email_template_apartment_es(
-            self.reservation_name,
             check_in_date,
             check_out_date,
             self.accommodation_type,
             month_es            
-        )
+        ) 
     
         # Codificar el cuerpo del email para incluirlo en el mailto link
         email_body_encoded_double_en = quote(email_body_double_en)

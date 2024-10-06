@@ -118,8 +118,8 @@ class TaxiFormState(rx.State):
         email_encoded_taxi_es = quote(email_body_es)
 
         # datos para el mailto link
-        mailto_link_taxi_en = f'mailto:{self.email_adress}?subject=Taxi Confirmation%20{reservation_date_formatted}%20{self.time_arrival}&body={email_encoded_taxi_en}'
-        mailto_link_taxi_es = f'mailto:{self.email_adress}?subject=Confirmación Taxi%20{reservation_date_formatted}%20{self.time_arrival}&body={email_encoded_taxi_es}'
+        mailto_link_taxi_en = f'mailto:{self.email_address}?subject=Taxi Confirmation%20{reservation_date_formatted}%20{self.time_arrival}&body={email_encoded_taxi_en}'
+        mailto_link_taxi_es = f'mailto:{self.email_address}?subject=Confirmación Taxi%20{reservation_date_formatted}%20{self.time_arrival}&body={email_encoded_taxi_es}'
 
         # llamada a la función de EmailTemplates para generar el html de confirmación del taxi
         content = EmailTemplates.get_email_confirmation_taxi_template(
@@ -127,7 +127,7 @@ class TaxiFormState(rx.State):
             reservation_name = self.reservation_name,
             reservation_date_formatted = self.reservation_date,
             phone_number = self.phone_number,
-            email_adress= self.email_address,
+            email_address= self.email_address,
             passenger_number = self.passenger_number,
             flight_number = self.flight_number,
             time_arrival = self.time_arrival,
@@ -165,7 +165,7 @@ class TaxiFormState(rx.State):
         self.set_reservation_name(FORM_DATA.get('reservation_name', self.reservation_name))
         self.set_resevation_date(FORM_DATA.get('reservation_date', self.reservation_date))
         self.set_phone_number(FORM_DATA.get('phone_number', self.phone_number))
-        self.set_email_adress(FORM_DATA.get('email_adress', self.email_address))
+        self.set_email_address(FORM_DATA.get('email_address', self.email_address))
         self.set_passenger_number(FORM_DATA.get('passenger_number', self.passenger_number))
         self.set_flight_number(FORM_DATA.get('flight_number', self.flight_number))
         self.set_time_arrival(FORM_DATA.get('arrival_time', self.time_arrival))

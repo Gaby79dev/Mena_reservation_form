@@ -63,6 +63,6 @@ def taxi_form_button() -> rx.Component:
         variant="surface",
         border_radius="lg",
         color_scheme="blue",
-        on_click=lambda: NavigationState.navigate_to_index(),
+        on_click=lambda: NavigationState.navigate_to_hotel_form(),
         style={"margin": "5px"}
     )

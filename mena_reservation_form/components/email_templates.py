@@ -1,3 +1,6 @@
+from datetime import datetime
+from .utils import month_dict
+
 
 class EmailTemplates:
 
@@ -342,10 +345,10 @@ class EmailTemplates:
                 """
 
         @staticmethod
-        def get_email_template_double_en(reservation_name, check_in_date, check_out_date, accommodation_type, superior_type,rooms_to_reserve, month_en):
+        def get_email_template_double_en(check_in_date, check_out_date, accommodation_type, superior_type,rooms_to_reserve, month_en):
                 room_word_en = "room" if rooms_to_reserve == "one" else "rooms"
                 room_prefix = "a" if rooms_to_reserve == "one" else rooms_to_reserve
-                return f"""Dear {reservation_name},
+                return f"""Dear guest,
 
         Thank you very much for trusting us and choosing Mena Plaza Hotel as your accommodation for an enjoyable stay in Nerja.
 
@@ -373,10 +376,10 @@ class EmailTemplates:
         """
 
         @staticmethod
-        def get_email_template_double_es(reservation_name, check_in_date, check_out_date, accommodation_type, superior_type,roooms_to_reserve, month_es):
+        def get_email_template_double_es(check_in_date, check_out_date, accommodation_type, superior_type,roooms_to_reserve, month_es):
                 room_word_es = "habitación" if roooms_to_reserve == "una" else "habitaciones"
                 double_room_word = "doble" if roooms_to_reserve == "una" else "dobles"
-                return f"""Estimado/a {reservation_name},
+                return f"""Estimado cliente,
 
         Muchas gracias por confiar en nosotros y elegir el Hotel Mena Plaza como su alojamiento para una estancia agradable en Nerja.
 
@@ -405,8 +408,8 @@ class EmailTemplates:
         """
 
         @staticmethod
-        def get_email_template_family_en(reservation_name, check_in_date, check_out_date, accommodation_type, month_en, rooms_to_reserve):
-                return f"""Dear {reservation_name},
+        def get_email_template_family_en(check_in_date, check_out_date, accommodation_type, month_en, rooms_to_reserve):
+                return f"""Dear guest,
 
         Thank you very much for trusting us and choosing Mena Plaza Hotel as your accommodation for an enjoyable stay in Nerja.
 
@@ -432,8 +435,8 @@ class EmailTemplates:
         """
 
         @staticmethod
-        def get_email_template_family_es(reservation_name, check_in_date, check_out_date, accommodation_type, month_es, rooms_to_reserve):
-                return f"""Estimado/a {reservation_name},
+        def get_email_template_family_es(check_in_date, check_out_date, accommodation_type, month_es, rooms_to_reserve):
+                return f"""Estimado cliente,
 
         Muchas gracias por confiar en nosotros y elegir el Hotel Mena Plaza como su alojamiento para una estancia agradable en Nerja.
 
@@ -460,8 +463,8 @@ class EmailTemplates:
         """
 
         @staticmethod
-        def get_email_template_apartment_en(reservation_name, check_in_date, check_out_date, accommodation_type, month_en):
-                return f"""Dear {reservation_name},
+        def get_email_template_apartment_en(check_in_date, check_out_date, accommodation_type, month_en):
+                return f"""Dear guest,
 
         Thank you very much for trusting us and choosing Mena Plaza Hotel as your accommodation for an enjoyable stay in Nerja.
 
@@ -489,8 +492,8 @@ class EmailTemplates:
         """
 
         @staticmethod
-        def get_email_template_apartment_es(reservation_name, check_in_date, check_out_date, accommodation_type, month_es):
-                return f"""Estimado/a {reservation_name},
+        def get_email_template_apartment_es(check_in_date, check_out_date, accommodation_type, month_es):
+                return f"""Estimado cliente,
 
         Muchas gracias por confiar en nosotros y elegir el Hotel Mena Plaza como su alojamiento para una estancia agradable en Nerja.
 
@@ -631,3 +634,411 @@ class EmailTemplates:
                 </body>
                 </html>
                 """
+        
+        @staticmethod
+        def _generate_double_price_en(form_data: dict):
+                check_in = form_data.get("check_in_date", "")
+                check_out = form_data.get("check_out_date", "")
+                
+                if check_in and check_out:
+                        check_in_date = datetime.strptime(check_in, "%Y-%m-%d")
+                        check_out_date = datetime.strptime(check_out, "%Y-%m-%d")
+                        check_in_month = check_in_date.strftime("%B")
+                        check_out_month = check_out_date.strftime("%B")
+                else:
+                        check_in_month = ""
+                        check_out_month = ""
+                
+                price_info = f"The price for a double room in the month of {check_in_month} is {form_data.get('price_stay1', '')} € per night (Only Stay) and {form_data.get('price_accommodation_breakfast1', '')} € per night (Accommodation and Breakfast)"
+                
+                if check_in_month != check_out_month and check_out_date.day == 2:
+                        price_info += f"\n\nThe price for a double room in the month of {check_out_month} is {form_data.get('price_stay2', '')} € per night (Only Stay) and {form_data.get('price_accommodation_breakfast2', '')} € per night (Accommodation and Breakfast)"
+                
+                return price_info
+        
+        @staticmethod
+        def _generate_double_price_es(form_data: dict):
+                check_in = form_data.get("check_in_date", "")
+                check_out = form_data.get("check_out_date", "")
+                
+                if check_in and check_out:
+                        check_in_date = datetime.strptime(check_in, "%Y-%m-%d")
+                        check_out_date = datetime.strptime(check_out, "%Y-%m-%d")
+                        check_in_month_en = check_in_date.strftime("%B")
+                        check_out_month_en = check_out_date.strftime("%B")
+                        check_in_month = month_dict.MONTHS_ES.get(check_in_month_en, check_in_month_en)
+                        check_out_month = month_dict.MONTHS_ES.get(check_out_month_en, check_out_month_en)
+                else:
+                        check_in_month = ""
+                        check_out_month = ""
+                
+                price_info = f"El precio de una habitación doble en el mes de {check_in_month} es de {form_data.get('price_stay1', '')} € por noche (Solo Estancia) y {form_data.get('price_accommodation_breakfast1', '')} € por noche (Alojamiento y Desayuno)"
+                
+                if check_in_month != check_out_month and check_out_date.day == 2:
+                        price_info += f"\n\nEl precio de una habitación doble en el mes de {check_out_month} es de {form_data.get('price_stay2', '')} € por noche (Solo Estancia) y {form_data.get('price_accommodation_breakfast2', '')} € por noche (Alojamiento y Desayuno)"
+                
+                return price_info
+
+        @staticmethod
+        def _generate_family_price_en(form_data: dict):
+                check_in = form_data.get("check_in_date", "")
+                check_out = form_data.get("check_out_date", "")
+                
+                if check_in and check_out:
+                        check_in_date = datetime.strptime(check_in, "%Y-%m-%d")
+                        check_out_date = datetime.strptime(check_out, "%Y-%m-%d")
+                        check_in_month = check_in_date.strftime("%B")
+                        check_out_month = check_out_date.strftime("%B")
+                else:
+                        check_in_month = ""
+                        check_out_month = ""
+                
+                price_info = f"The price for a family room in the month of {check_in_month} is {form_data.get('price_stay1', '')} € per night (Only Stay) and {form_data.get('price_accommodation_breakfast1', '')} € per night (Accommodation and Breakfast)"
+                
+                if check_in_month != check_out_month and check_out_date.day == 2:
+                        price_info += f"\n\nThe price for a family room in the month of {check_out_month} is {form_data.get('price_stay2', '')} € per night (Only Stay) and {form_data.get('price_accommodation_breakfast2', '')} € per night (Accommodation and Breakfast)"
+                
+                return price_info
+        @staticmethod
+        def _generate_family_price_es(form_data: dict):
+                check_in = form_data.get("check_in_date", "")
+                check_out = form_data.get("check_out_date", "")
+                
+                if check_in and check_out:
+                        check_in_date = datetime.strptime(check_in, "%Y-%m-%d")
+                        check_out_date = datetime.strptime(check_out, "%Y-%m-%d")
+                        check_in_month_en = check_in_date.strftime("%B")
+                        check_out_month_en = check_out_date.strftime("%B")
+                        check_in_month = month_dict.MONTHS_ES.get(check_in_month_en, check_in_month_en)
+                        check_out_month = month_dict.MONTHS_ES.get(check_out_month_en, check_out_month_en)
+                else:
+                        check_in_month = ""
+                        check_out_month = ""
+                
+                price_info = f"El precio de una habitación familiar en el mes de {check_in_month} es de {form_data.get('price_stay1', '')} € por noche (Solo Estancia) y {form_data.get('price_accommodation_breakfast1', '')} € por noche (Alojamiento y Desayuno)"
+                
+                if check_in_month != check_out_month and check_out_date.day == 2:
+                        price_info += f"\n\nEl precio de una habitación familiar en el mes de {check_out_month} es de {form_data.get('price_stay2', '')} € por noche (Solo Estancia) y {form_data.get('price_accommodation_breakfast2', '')} € por noche (Alojamiento y Desayuno)"
+                
+                return price_info
+
+        @staticmethod
+        def _generate_apartament_price_en(form_data: dict) -> str:
+                check_in = form_data.get("check_in_date", "")
+                check_out = form_data.get("check_out_date", "")
+                
+                if check_in and check_out:
+                        check_in_date = datetime.strptime(check_in, "%Y-%m-%d")
+                        check_out_date = datetime.strptime(check_out, "%Y-%m-%d")
+                        check_in_month = check_in_date.strftime("%B")
+                        check_out_month = check_out_date.strftime("%B")
+                else:
+                        check_in_month = ""
+                        check_out_month = ""
+                
+                price_info = f"The price for the apartment in the month of {check_in_month} is {form_data.get('price_stay1', '')} € per night (only stay)"
+                
+                if check_in_month != check_out_month and check_out_date.day == 2:
+                        price_info += f"\n\nThe price for the apartment in the month of {check_out_month} is {form_data.get('price_stay2', '')} € per night (only stay)"
+                
+                return price_info
+        
+        @staticmethod
+        def _generate_apartament_price_es(form_data: dict) -> str:
+                check_in = form_data.get("check_in_date", "")
+                check_out = form_data.get("check_out_date", "")
+        
+                if check_in and check_out:
+                        check_in_date = datetime.strptime(check_in, "%Y-%m-%d")
+                        check_out_date = datetime.strptime(check_out, "%Y-%m-%d")
+                        check_in_month_en = check_in_date.strftime("%B")
+                        check_out_month_en = check_out_date.strftime("%B")
+                        check_in_month = month_dict.MONTHS_ES.get(check_in_month_en, check_in_month_en)
+                        check_out_month = month_dict.MONTHS_ES.get(check_out_month_en, check_out_month_en)
+                else:
+                        check_in_month = ""
+                        check_out_month = ""
+                
+                price_info = f"El precio del apartamento en el mes de {check_in_month} es de {form_data.get('price_stay1', '')} € por noche (solo estancia)"
+                
+                if check_in_month != check_out_month and check_out_date.day == 2:
+                        price_info += f"\n\nEl precio del apartamento en el mes de {check_out_month} es de {form_data.get('price_stay2', '')} € por noche (solo estancia)"
+                
+                return price_info
+
+        
+        @staticmethod
+        def double_room_template_en(form_data: dict) -> str:
+                # Set a default value for rooms_to_reserve if it's not provided or is None
+                rooms_to_reserve = form_data.get('rooms_to_reserve', '1')  # Default to '1' if not provided
+                
+                # Determine the correct word for the number of rooms
+                room_word_en = "room" if rooms_to_reserve == "1" else "rooms"
+                
+                # Determine the correct prefix for the number of rooms
+                room_prefix = "a" if rooms_to_reserve == "1" else rooms_to_reserve
+                
+                price_info = EmailTemplates._generate_double_price_en(form_data)
+                
+                check_in = form_data.get("check_in_date", "")
+                check_out = form_data.get("check_out_date", "")
+                
+                return f"""
+Dear guest,
+
+Thank you very much for contacting us!
+
+We are pleased to inform you that we have availability for {room_prefix} double {room_word_en} during your chosen dates:
+
+Check-in date: {check_in} 
+Check-out date: {check_out}
+
+{price_info}
+
+We also have superior rooms with a wonderful terrace that includes a table and two chairs. 
+This type of room has an additional charge of 8 € per night. If you would like to ensure your superior room is facing Plaza de España, 
+the additional charge is 10 € per night. Both room types are subject to availability, and if possible, 
+we will confirm this in your booking confirmation.
+
+To proceed with the reservation, please click on the following secure link to enter the required information:
+
+-->> https://menahotelhub.reflex.run/hotel_reservation/ <<--
+
+Please note that we will not charge your credit card; this is simply a guarantee for the reservation. Payment will be made upon arrival, 
+and you can pay by credit card or cash.
+
+If you need any additional information, please do not hesitate to contact us. We look forward to your response.
+
+Sincerely,
+
+{form_data.get('reception_name', '')}
+
+Reservations Department
+"""
+
+        @staticmethod
+        def double_room_template_es(form_data: dict) -> str:
+                # Set a default value for rooms_to_reserve if it's not provided or is None
+                rooms_to_reserve = form_data.get('rooms_to_reserve', '1')  # Default to '1' if not provided
+                
+                # Determine the correct word for the number of rooms
+                room_word_es = "habitación" if rooms_to_reserve == "1" else "habitaciones"
+                
+                # Determine the correct prefix for the number of rooms
+                room_prefix = "una" if rooms_to_reserve == "1" else rooms_to_reserve
+
+                double_prefix ="doble" if rooms_to_reserve == "1" else "dobles"
+                
+                price_info = EmailTemplates._generate_double_price_es(form_data)
+                
+                check_in = form_data.get("check_in_date", "")
+                check_out = form_data.get("check_out_date", "")
+                return f"""
+Estimado huésped,
+
+¡Muchas gracias por contactarnos!
+
+Nos complace informarle de que tenemos disponibilidad para {room_prefix} {room_word_es} {double_prefix} durante las fechas elegidas:
+
+Fecha de entrada: {check_in}
+Fecha de salida: {check_out}
+
+{price_info}
+
+También tenemos habitaciones superiores con una maravillosa terraza que incluye una mesa y dos sillas. 
+Este tipo de habitación tiene un cargo adicional de 8 € por noche. Si desea asegurar que su habitación superior 
+dé a la Plaza de España, el cargo adicional es de 10 € por noche. Ambos tipos de habitación están sujetos a disponibilidad, 
+y si es posible, lo confirmaremos en su confirmación de reserva.
+
+Para proceder con la reserva, por favor haga clic en el siguiente enlace seguro para ingresar la información requerida:
+
+-->> https://menahotelhub.reflex.run/hotel_reservation/ <<--
+
+Por favor, tenga en cuenta que no cobraremos su tarjeta de crédito; esto es simplemente una garantía para la reserva. 
+El pago se realizará al llegar, y puede pagar con tarjeta de crédito o en efectivo.
+
+Si necesita cualquier información adicional, no dude en contactarnos. Esperamos su respuesta.
+
+Atentamente,
+
+{form_data.get('reception_name', '')}
+
+Departamento de Reservas
+"""
+
+
+        @staticmethod
+        def family_room_template_en(form_data: dict) -> str:
+                # Set a default value for rooms_to_reserve if it's not provided or is None
+                family_rooms_to_reserve = form_data.get('rooms_to_reserve', '1')  # Default to '1' if not provided
+                
+                # Determine the correct word for the number of rooms
+                family_room_word_en = "room" if family_rooms_to_reserve == "1" else "rooms"
+                
+                # Determine the correct prefix for the number of rooms
+                family_room_prefix = "a" if family_rooms_to_reserve == "1" else family_rooms_to_reserve
+                
+                price_info = EmailTemplates._generate_family_price_en(form_data)
+                
+                check_in = form_data.get("check_in_date", "")
+                check_out = form_data.get("check_out_date", "")
+                return f"""
+Dear guest,
+
+Thank you very much for contacting us!
+
+We are pleased to inform you that we have availability for {family_room_prefix} family {family_room_word_en} during your chosen dates:
+
+Check-in date: {check_in}
+Check-out date: {check_out}
+
+{price_info}
+
+To proceed with the reservation, please click on the following secure link to enter the required information and select family room type:
+
+-->> https://menahotelhub.reflex.run/hotel_reservation/ <<--
+
+Please note that we will not charge your credit card; this is simply a guarantee for the reservation. Payment will be made upon arrival, 
+and you can pay by credit card or cash.
+
+If you need any additional information, please do not hesitate to contact us. We look forward to your response.
+
+Sincerely,
+
+{form_data.get('reception_name', '')}
+
+Reservations Department
+"""
+        @staticmethod
+        def family_room_template_es(form_data: dict) -> str:
+                # Set a default value for rooms_to_reserve if it's not provided or is None
+                family_rooms_to_reserve = form_data.get('rooms_to_reserve', '1')  # Default to '1' if not provided
+                
+                # Determine the correct word for the number of rooms
+                family_room_word_es = "habitación" if family_rooms_to_reserve == "1" else "habitaciones"
+                
+                # Determine the correct prefix for the number of rooms
+                family_room_prefix = "una" if family_rooms_to_reserve == "1" else family_rooms_to_reserve
+                
+                price_info = EmailTemplates._generate_family_price_es(form_data)
+                
+                check_in = form_data.get("check_in_date", "")
+                check_out = form_data.get("check_out_date", "")
+                return f"""
+Estimado huésped,
+
+¡Muchas gracias por contactarnos!
+
+Nos complace informarle de que tenemos disponibilidad para {family_room_prefix} {family_room_word_es} familiar durante las fechas elegidas:
+
+Fecha de entrada: {check_in}
+Fecha de salida: {check_out}
+
+{price_info}
+
+Para proceder con la reserva, por favor haga clic en el siguiente enlace seguro para ingresar la información requerida y seleccionar el tipo de habitación familiar:
+
+-->> https://menahotelhub.reflex.run/hotel_reservation/ <<--
+
+Por favor, tenga en cuenta que no cobraremos su tarjeta de crédito; esto es simplemente una garantía para la reserva. El pago se realizará al llegar, y puede pagar con tarjeta de crédito o en efectivo.
+
+Si necesita cualquier información adicional, no dude en contactarnos. Esperamos su respuesta.
+
+Atentamente,
+
+{form_data.get('reception_name', '')}
+
+Departamento de Reservas
+"""
+
+        @staticmethod
+        def apartament_template_en(form_data: dict) -> str:
+                # Set a default value for rooms_to_reserve if it's not provided or is None
+                apartments_to_reserve = form_data.get('rooms_to_reserve', '1')  # Default to '1' if not provided
+                
+                # Determine the correct word for the number of rooms
+                apartments_word_en = "apartament" if apartments_to_reserve == "1" else "apartments"
+                
+                # Determine the correct prefix for the number of rooms
+                apartment_prefix = "an" if apartments_to_reserve == "1" else apartments_to_reserve
+                
+                price_info = EmailTemplates._generate_apartament_price_en(form_data)
+                
+                check_in = form_data.get("check_in_date", "")
+                check_out = form_data.get("check_out_date", "")
+        
+                return f"""
+Dear guest,
+
+Thank you very much for contacting us!
+
+We are pleased to inform you that we have availability for {apartment_prefix} {apartments_word_en} during your chosen dates:
+
+Check-in date: {check_in} 
+Check-out date: {check_out}
+
+{price_info}
+
+When booking the apartment, the first night will be charged. In case of cancellation, it is non-refundable, 
+but you can modify the reservation dates until the end of 2025, depending on our availability.
+
+To proceed with the reservation, please click on the following secure link to enter the required information and select apartment type:
+
+-->> https://menahotelhub.reflex.run/hotel_reservation/ <<--
+
+The apartment does not include daily cleaning.
+
+If you need any additional information, please do not hesitate to contact us. We look forward to your response.
+
+Sincerely,
+
+{form_data.get('reception_name', '')}
+
+Reservations Department
+"""
+        
+        @staticmethod
+        def apartament_template_es(form_data: dict) -> str:
+                # Set a default value for rooms_to_reserve if it's not provided or is None
+                apartments_to_reserve = form_data.get('rooms_to_reserve', '1')  # Default to '1' if not provided
+                
+                # Determine the correct word for the number of rooms
+                apartment_word_es = "apartamento" if apartments_to_reserve == "1" else "apartamentos"
+                
+                # Determine the correct prefix for the number of rooms
+                room_prefix = "un" if apartments_to_reserve == "1" else apartments_to_reserve
+                
+                price_info = EmailTemplates._generate_apartament_price_es(form_data)
+                
+                check_in = form_data.get("check_in_date", "")
+                check_out = form_data.get("check_out_date", "")
+        
+                return f"""
+Estimado huésped,
+
+¡Muchas gracias por contactarnos!
+
+Nos complace informarle de que tenemos disponibilidad para {room_prefix} {apartment_word_es} durante las fechas elegidas:
+
+Fecha de entrada: {check_in} 
+Fecha de salida: {check_out}
+
+{price_info}
+
+Al reservar el apartamento, se cobrará la primera noche. En caso de cancelación, no es reembolsable, 
+pero puede modificar las fechas de la reserva hasta el final de 2025, dependiendo de nuestra disponibilidad.
+
+Para proceder con la reserva, por favor haga clic en el siguiente enlace seguro para ingresar la información requerida y seleccionar el tipo de apartamento:
+
+-->> https://menahotelhub.reflex.run/hotel_reservation/ <<--
+
+El apartamento no incluye limpieza diaria.
+
+Si necesita cualquier información adicional, no dude en contactarnos. Esperamos su respuesta.
+
+Atentamente,
+
+{form_data.get('reception_name', '')}
+
+Departamento de Reservas
+"""

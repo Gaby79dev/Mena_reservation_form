@@ -238,8 +238,7 @@ def taxiReservation() -> rx.Component:
             bg="#EBF2FB",
             margin_top="60px"  
         ),
-            footer(),         
-        
+        footer(),         
         align="center",
         bg="#E7EEF7",
         
