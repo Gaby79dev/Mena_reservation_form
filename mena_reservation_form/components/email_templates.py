@@ -497,7 +497,7 @@ class EmailTemplates:
 
         Muchas gracias por confiar en nosotros y elegir el Hotel Mena Plaza como su alojamiento para una estancia agradable en Nerja.
 
-        Confirmo la reserva de un apartamento de dos dormitorios para las siguientes fechas:
+        Confirmamos la reserva de un apartamento de dos dormitorios para las siguientes fechas:
         
         Fecha de entrada: {check_in_date}
         Fecha de salida: {check_out_date}
@@ -807,6 +807,9 @@ To proceed with the reservation, please click on the following secure link to en
 Please note that we will not charge your credit card; this is simply a guarantee for the reservation. Payment will be made upon arrival, 
 and you can pay by credit card or cash.
 
+Important: Sending the form hours or days after receiving this message does not confirm that the room has been reserved. 
+You must receive a confirmation from us to ensure your booking.
+
 If you need any additional information, please do not hesitate to contact us. We look forward to your response.
 
 Sincerely,
@@ -857,6 +860,9 @@ Para proceder con la reserva, por favor haga clic en el siguiente enlace seguro 
 Por favor, tenga en cuenta que no cobraremos su tarjeta de crédito; esto es simplemente una garantía para la reserva. 
 El pago se realizará al llegar, y puede pagar con tarjeta de crédito o en efectivo.
 
+Importante: Enviar el formulario horas o días después de esta comunicación no garantiza que tenga la habitación reservada. 
+Deberá esperar nuestra confirmación para asegurar la reserva.
+
 Si necesita cualquier información adicional, no dude en contactarnos. Esperamos su respuesta.
 
 Atentamente,
@@ -901,6 +907,9 @@ To proceed with the reservation, please click on the following secure link to en
 Please note that we will not charge your credit card; this is simply a guarantee for the reservation. Payment will be made upon arrival, 
 and you can pay by credit card or cash.
 
+Important: Sending the form hours or days after receiving this message does not confirm that the room has been reserved. 
+You must receive a confirmation from us to ensure your booking.
+
 If you need any additional information, please do not hesitate to contact us. We look forward to your response.
 
 Sincerely,
@@ -942,6 +951,9 @@ Para proceder con la reserva, por favor haga clic en el siguiente enlace seguro 
 
 Por favor, tenga en cuenta que no cobraremos su tarjeta de crédito; esto es simplemente una garantía para la reserva. El pago se realizará al llegar, y puede pagar con tarjeta de crédito o en efectivo.
 
+Importante: Enviar el formulario horas o días después de esta comunicación no garantiza que tenga la habitación reservada. 
+Deberá esperar nuestra confirmación para asegurar la reserva.
+
 Si necesita cualquier información adicional, no dude en contactarnos. Esperamos su respuesta.
 
 Atentamente,
@@ -957,7 +969,7 @@ Departamento de Reservas
                 apartments_to_reserve = form_data.get('rooms_to_reserve', '1')  # Default to '1' if not provided
                 
                 # Determine the correct word for the number of rooms
-                apartments_word_en = "apartament" if apartments_to_reserve == "1" else "apartments"
+                apartments_word_en = "apartment" if apartments_to_reserve == "1" else "apartments"
                 
                 # Determine the correct prefix for the number of rooms
                 apartment_prefix = "an" if apartments_to_reserve == "1" else apartments_to_reserve
@@ -987,6 +999,9 @@ To proceed with the reservation, please click on the following secure link to en
 -->> https://menahotelhub.reflex.run/hotel_reservation/ <<--
 
 The apartment does not include daily cleaning.
+
+Important: Sending the form hours or days after receiving this message does not confirm that the room has been reserved. 
+You must receive a confirmation from us to ensure your booking.
 
 If you need any additional information, please do not hesitate to contact us. We look forward to your response.
 
@@ -1033,6 +1048,9 @@ Para proceder con la reserva, por favor haga clic en el siguiente enlace seguro 
 -->> https://menahotelhub.reflex.run/hotel_reservation/ <<--
 
 El apartamento no incluye limpieza diaria.
+
+Importante: Enviar el formulario horas o días después de esta comunicación no garantiza que tenga la habitación reservada. 
+Deberá esperar nuestra confirmación para asegurar la reserva.
 
 Si necesita cualquier información adicional, no dude en contactarnos. Esperamos su respuesta.
 
